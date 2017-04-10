@@ -27,7 +27,7 @@ StereoFeatures Femas::matchStereo(const cv::Mat& left,
   // Epipolar filter and 3D
   MonoFeatures l_feat_matched;
   MonoFeatures r_feat_matched;
-  std::vector<cv::Point3f> points;
+  std::vector<cv::Point3d> points;
 
   for (std::size_t i=0; i < matches.size(); ++i) {
     cv::KeyPoint l_kp = l_feat.kp[matches[i].queryIdx];

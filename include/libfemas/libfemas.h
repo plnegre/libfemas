@@ -136,23 +136,19 @@ class Femas {
                           const float& match_thresh = 0.8);
 
   /**
-   * @brief      Estimates the pose of image B with respect to image A
+   * @brief      Estimates the position of camera b with respect to camera a
    *
-   * @param[in]  img_a         The image a
-   * @param[in]  img_b         The image b
-   * @param[in]  match_type    The match type (can be RATIO or CROSSCHECK)
-   * @param[in]  match_thresh  The match thresh (typically between 0.7-0.9)
-   * @param[in]  reproj_err    The reprojection error (typically between 4.0 and 12.0)
-   * @param      pose          The output pose of camera
-   *
-   * @return     number of inliers
+   * @param[in]  points_a    The 3D points of camera a
+   * @param[in]  points_b    The 2D points of camera b
+   * @param      pose        The output pose
+   * @param      inliers     The inliers vector
+   * @param[in]  reproj_err  The reprojection error
    */
-  int estimatePose(const cv::Mat& img_a,
-                   const cv::Mat img_b,
-                   tf::Transform* pose,
-                   const MatchType& match_type = RATIO,
-                   const float& match_thresh = 0.8,
-                   const float& reproj_err = 6.0);
+  void estimatePose(const std::vector<cv::Point3d>& points_a,
+                    const std::vector<cv::Point2d>& points_b,
+                    tf::Transform* pose,
+                    std::vector<int>* inliers,
+                    const float& reproj_err = 6.0);
 
  private:
   /**

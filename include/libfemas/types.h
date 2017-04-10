@@ -54,7 +54,7 @@ struct MonoFeatures {
 struct StereoFeatures {
   MonoFeatures left;                //!< Left image features
   MonoFeatures right;               //!< Right image features
-  std::vector<cv::Point3f> points;  //!< 3D camera points
+  std::vector<cv::Point3d> points;  //!< 3D camera points
 };
 
 /**
