@@ -62,6 +62,8 @@ class Femas {
    *
    * @param[in]  left          The left image
    * @param[in]  right         The right image
+   * @param[in]  kp_type       The keypoint type
+   * @param[in]  desc_type     The descriptor type
    * @param[in]  match_type    The match type (can be RATIO or CROSSCHECK)
    * @param[in]  match_thresh  The match thresh (typically between 0.7-0.9)
    * @param[in]  epi_thresh    The epipolar threshold (for rectified images
@@ -84,18 +86,20 @@ class Femas {
    *
    * @param[in]  img_a         The image a
    * @param[in]  img_b         The image b
+   * @param[in]  kp_type       The keypoint type
+   * @param[in]  desc_type     The descriptor type
    * @param[in]  match_type    The match type (can be RATIO or CROSSCHECK)
    * @param[in]  match_thresh  The match thresh (typically between 0.7-0.9)
    *
    * @return     Output struct with the matched keypoints, descriptors and 3D
    * points relative to camera frame
    */
-  MonoMatches matchNoStereo(const cv::Mat& img_a,
-                            const cv::Mat& img_b,
-                            const KeyPointType& kp_type = ORB_KP,
-                            const DescriptorType& desc_type = ORB_DESC,
-                            const MatchType& match_type = RATIO,
-                            const float& match_thresh = 0.8);
+  MonoMatches matchPair(const cv::Mat& img_a,
+                        const cv::Mat& img_b,
+                        const KeyPointType& kp_type = ORB_KP,
+                        const DescriptorType& desc_type = ORB_DESC,
+                        const MatchType& match_type = RATIO,
+                        const float& match_thresh = 0.8);
 
   /**
    * @brief      Performs a matching between 2 frames (mono) without applying the
@@ -109,12 +113,10 @@ class Femas {
    * @return     Output struct with the matched keypoints, descriptors and 3D
    * points relative to camera frame
    */
-  MonoMatches matchNoStereo(const MonoFeatures& feat_img_a,
-                            const MonoFeatures& feat_img_b,
-                            const KeyPointType& kp_type = ORB_KP,
-                            const DescriptorType& desc_type = ORB_DESC,
-                            const MatchType& match_type = RATIO,
-                            const float& match_thresh = 0.8);
+  MonoMatches matchPair(const MonoFeatures& feat_a,
+                        const MonoFeatures& feat_b,
+                        const MatchType& match_type = RATIO,
+                        const float& match_thresh = 0.8);
 
   /**
    * @brief      Performs a matching between 2 frames (stereo) without applying the
@@ -128,12 +130,10 @@ class Femas {
    * @return     Output struct with the matched keypoints, descriptors and 3D
    * points relative to camera frame
    */
-  StereoMatches matchNoStereo(const StereoFeatures& feat_img_a,
-                              const StereoFeatures& feat_img_b,
-                              const KeyPointType& kp_type = ORB_KP,
-                              const DescriptorType& desc_type = ORB_DESC,
-                              const MatchType& match_type = RATIO,
-                              const float& match_thresh = 0.8);
+  StereoMatches matchPair(const StereoFeatures& feat_a,
+                          const StereoFeatures& feat_b,
+                          const MatchType& match_type = RATIO,
+                          const float& match_thresh = 0.8);
 
   /**
    * @brief      Estimates the pose of image B with respect to image A
@@ -167,6 +167,21 @@ class Femas {
   MonoFeatures extractFeatures(const cv::Mat& img,
                                const KeyPointType& kp_type = ORB_KP,
                                const DescriptorType& desc_type = ORB_DESC);
+
+  /**
+   * @brief      Generic feature matching
+   *
+   * @param[in]  a             The vector of features a
+   * @param[in]  b             The vector of features b
+   * @param[in]  match_type    The match type
+   * @param[in]  match_thresh  The match threshold
+   *
+   * @return     Output vector of matches
+   */
+  std::vector<cv::DMatch> match(const MonoFeatures& a,
+                                const MonoFeatures& b,
+                                const MatchType& match_type = RATIO,
+                                const float& match_thresh = 0.7);
 
   /**
    * @brief      Ratio feature matching

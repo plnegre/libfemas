@@ -43,7 +43,6 @@ struct Config {
  * @brief      Stores keypoints and descriptors for a single images
  */
 struct MonoFeatures {
-  MonoFeatures() {}
   std::vector<cv::KeyPoint> kp;  //!< Image keypoints
   cv::Mat desc;                  //!< image descriptors
 };
@@ -53,7 +52,6 @@ struct MonoFeatures {
  * frame) for a stereo pair.
  */
 struct StereoFeatures {
-  StereoFeatures() {}
   MonoFeatures left;                //!< Left image features
   MonoFeatures right;               //!< Right image features
   std::vector<cv::Point3f> points;  //!< 3D camera points

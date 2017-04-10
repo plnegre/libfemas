@@ -22,23 +22,7 @@ StereoFeatures Femas::matchStereo(const cv::Mat& left,
   MonoFeatures r_feat = extractFeatures(right, kp_type, desc_type);
 
   // Match
-  std::vector<cv::DMatch> matches;
-  switch (match_type) {
-    case RATIO:
-    {
-      matches = ratioMatching(l_feat, r_feat, match_thresh);
-      break;
-    }
-    case CROSSCHECK:
-    {
-      matches = crossCheckMatching(l_feat, r_feat, match_thresh);
-      break;
-    }
-    default:
-    {
-      ROS_ERROR("[Femas::matchStereo]: match type not permitted.");
-    }
-  }
+  std::vector<cv::DMatch> matches = match(l_feat, r_feat, match_type, match_thresh);
 
   // Epipolar filter and 3D
   MonoFeatures l_feat_matched;
@@ -73,6 +57,101 @@ StereoFeatures Femas::matchStereo(const cv::Mat& left,
   sf.right  = r_feat_matched;
   sf.points = points;
   return sf;
+}
+
+MonoMatches Femas::matchPair(const cv::Mat& img_a,
+                             const cv::Mat& img_b,
+                             const KeyPointType& kp_type,
+                             const DescriptorType& desc_type,
+                             const MatchType& match_type,
+                             const float& match_thresh) {
+  // Extract features
+  MonoFeatures feat_a = extractFeatures(img_a, kp_type, desc_type);
+  MonoFeatures feat_b = extractFeatures(img_b, kp_type, desc_type);
+
+  return matchPair(feat_a, feat_b, match_type, match_thresh);
+}
+
+MonoMatches Femas::matchPair(const MonoFeatures& feat_a,
+                             const MonoFeatures& feat_b,
+                             const MatchType& match_type,
+                             const float& match_thresh) {
+  // Match
+  std::vector<cv::DMatch> matches = match(feat_a, feat_b, match_type, match_thresh);
+
+  // Compose the output
+  MonoFeatures a;
+  MonoFeatures b;
+  for (std::size_t i=0; i < matches.size(); ++i) {
+    a.kp.push_back(feat_a.kp[matches[i].queryIdx]);
+    b.kp.push_back(feat_b.kp[matches[i].trainIdx]);
+    a.desc.push_back(feat_a.desc.row(matches[i].queryIdx));
+    b.desc.push_back(feat_b.desc.row(matches[i].trainIdx));
+  }
+  MonoMatches mm;
+  mm.a = a;
+  mm.b = b;
+  return mm;
+}
+
+StereoMatches Femas::matchPair(const StereoFeatures& feat_a,
+                               const StereoFeatures& feat_b,
+                               const MatchType& match_type,
+                               const float& match_thresh) {
+  // Match
+  std::vector<cv::DMatch> matches = match(feat_a.left, feat_b.left, match_type, match_thresh);
+
+  // Compose the output
+  StereoFeatures a;
+  StereoFeatures b;
+  for (std::size_t i=0; i < matches.size(); ++i) {
+    // Kp A
+    a.left.kp.push_back(feat_a.left.kp[matches[i].queryIdx]);
+    a.right.kp.push_back(feat_a.right.kp[matches[i].queryIdx]);
+    // Desc A
+    a.left.desc.push_back(feat_a.left.desc.row(matches[i].queryIdx));
+    a.right.desc.push_back(feat_a.right.desc.row(matches[i].queryIdx));
+    // 3D A
+    a.points.push_back(feat_a.points[matches[i].queryIdx]);
+
+    // Kp B
+    b.left.kp.push_back(feat_b.left.kp[matches[i].trainIdx]);
+    b.right.kp.push_back(feat_b.right.kp[matches[i].trainIdx]);
+    // Desc B
+    b.left.desc.push_back(feat_b.left.desc.row(matches[i].trainIdx));
+    b.right.desc.push_back(feat_b.right.desc.row(matches[i].trainIdx));
+    // 3D B
+    b.points.push_back(feat_b.points[matches[i].trainIdx]);
+  }
+  StereoMatches sm;
+  sm.a = a;
+  sm.b = b;
+  return sm;
+}
+
+std::vector<cv::DMatch> Femas::match(const MonoFeatures& a,
+                                     const MonoFeatures& b,
+                                     const MatchType& match_type,
+                                     const float& match_thresh) {
+  // Match
+  std::vector<cv::DMatch> matches;
+  switch (match_type) {
+    case RATIO:
+    {
+      matches = ratioMatching(a, b, match_thresh);
+      break;
+    }
+    case CROSSCHECK:
+    {
+      matches = crossCheckMatching(a, b, match_thresh);
+      break;
+    }
+    default:
+    {
+      ROS_ERROR("[Femas::match]: match type not permitted.");
+    }
+  }
+  return matches;
 }
 
 std::vector<cv::DMatch> Femas::ratioMatching(const MonoFeatures& feat_a,
