@@ -26,17 +26,20 @@ enum MatchType {
  * @brief      Base class configuration parameters
  */
 struct Config {
-  Config() : desc_type("ORB"), desc_matching_type("RATIO"),
-  desc_thresh_ratio(0.8), epipolar_thresh(1.2) {}
+  Config() : kp_type(ORB_KP), desc_type(ORB_DESC), desc_matching_type(RATIO),
+  desc_thresh_ratio(0.8), epipolar_thresh(1.2), reproj_thresh(6.0) {}
 
-  std::string desc_type;           //!< Type of the descriptors
-  std::string desc_matching_type;  //!< Can be "CROSSCHECK" or "RATIO"
-  double desc_thresh_ratio;        //!< Descriptor threshold for crosscheck
-                                   //   matching (typically between 0.7-0.9) or
-                                   //   ratio for ratio matching (typically
-                                   //   between 0.7-0.9)
-  int epipolar_thresh;             //!< Epipolar threshold. For rectified stereo
-                                   //   pairs should be < 1.5
+  KeyPointType kp_type;           //!< Type of the keypoints
+  DescriptorType desc_type;       //!< Type of the descriptors
+  MatchType desc_matching_type;   //!< CROSSCHECK or RATIO matching
+  double desc_thresh_ratio;       //!< Descriptor threshold for crosscheck
+                                  //   matching (typically between 0.7-0.9) or
+                                  //   ratio for ratio matching (typically
+                                  //   between 0.7-0.9)
+  double epipolar_thresh;         //!< Epipolar threshold. For rectified stereo
+                                  //   pairs should be < 1.5
+  double reproj_thresh;           //!< The reprojection threshold for the pose
+                                  //   estimation
 };
 
 /**

@@ -8,8 +8,7 @@ namespace femas {
 void Femas::estimatePose(const std::vector<cv::Point3d>& points_a,
                          const std::vector<cv::Point2d>& points_b,
                          tf::Transform* pose,
-                         std::vector<int>* inliers,
-                         const float& reproj_err) {
+                         std::vector<int>* inliers) {
   // Sanity checks
   if (!is_camera_model_set_) {
     ROS_ERROR("[Femas::estimatePose]: set camera model before match stereo features.");
@@ -23,7 +22,7 @@ void Femas::estimatePose(const std::vector<cv::Point3d>& points_a,
 
   cv::Mat rvec, tvec;
   cv::solvePnPRansac(points_a, points_b, camera_matrix, cv::Mat(), rvec, tvec,
-            false, 100, reproj_err, 0.99, *inliers, cv::SOLVEPNP_ITERATIVE);
+            false, 100, config_.reproj_thresh, 0.99, *inliers, cv::SOLVEPNP_ITERATIVE);
 
   // Sanity check
   if (rvec.empty() || tvec.empty()) {

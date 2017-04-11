@@ -5,12 +5,10 @@
 
 namespace femas {
 
-MonoFeatures Femas::extractFeatures(const cv::Mat& img,
-                                    const KeyPointType& kp_type,
-                                    const DescriptorType& desc_type) {
+MonoFeatures Femas::extractFeatures(const cv::Mat& img) {
   // Proceed depending on the keypoint type
   cv::Ptr<cv::Feature2D> detector(new cv::Feature2D());
-  switch (kp_type) {
+  switch (config_.kp_type) {
     case SIFT_KP:
     {
       detector = cv::xfeatures2d::SIFT::create();
@@ -38,7 +36,7 @@ MonoFeatures Femas::extractFeatures(const cv::Mat& img,
 
   // Proceed depending on the descriptor type
   cv::Ptr<cv::Feature2D> extractor(new cv::Feature2D());
-  switch (desc_type) {
+  switch (config_.desc_type) {
     case SIFT_DESC:
     {
       extractor = cv::xfeatures2d::SIFT::create();
